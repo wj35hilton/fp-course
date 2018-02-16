@@ -58,7 +58,7 @@ To test this module, load ghci in the root of the project directory, and do
 Example output:
 
 $ ghci
-GHCi, version ... 
+GHCi, version ...
 Loading package...
 Loading ...
 [ 1 of 28] Compiling (etc...
@@ -80,15 +80,28 @@ the contents of c
 main ::
   IO ()
 main =
-  error "todo: Course.FileIO#main"
+  getArgs >>= \args ->
+    case args of
+      filename :. Nil -> run filename
+      _ -> putStrLn "usage: runhaskell FileIO.hs filename"
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@ and @printFiles@.
 run ::
   FilePath
   -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+run filename =
+--  printFiles =<< (getFiles (filename :. Nil))
+
+--  let contents = readFile filename -- IO Chars
+--      filenames = lines <$> contents -- IO (List Chars)
+--      files = getFiles =<< filenames -- List (FilePath, Chars)
+--  in printFiles =<< files
+
+  do
+    contents <- readFile filename
+    files <- getFiles (lines contents)
+    printFiles files
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
@@ -96,7 +109,8 @@ getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
 getFiles =
-  error "todo: Course.FileIO#getFiles"
+--  sequence (getFile <$> filenames)
+  sequence . (<$>) getFile
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
@@ -104,7 +118,11 @@ getFile ::
   FilePath
   -> IO (FilePath, Chars)
 getFile =
-  error "todo: Course.FileIO#getFile"
+--  let contents = readFile filename
+--  in ((,) filename) >>= contents
+
+   lift2 (<$>) (,) readFile
+--   (<$>) <$> (,) <*> readFile
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
@@ -112,7 +130,7 @@ printFiles ::
   List (FilePath, Chars)
   -> IO ()
 printFiles =
-  error "todo: Course.FileIO#printFiles"
+  void . sequence . (<$>) (uncurry printFile)
 
 -- Given the file name, and file contents, print them.
 -- Use @putStrLn@.
@@ -120,5 +138,7 @@ printFile ::
   FilePath
   -> Chars
   -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile name contents =
+  do
+    putStrLn name
+    putStrLn contents

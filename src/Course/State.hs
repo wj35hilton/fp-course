@@ -38,8 +38,8 @@ exec ::
   State s a
   -> s
   -> s
-exec =
-  error "todo: Course.State#exec"
+exec (State k) =
+  snd . k
 
 -- | Run the `State` seeded with `s` and retrieve the resulting value.
 --
@@ -48,8 +48,8 @@ eval ::
   State s a
   -> s
   -> a
-eval =
-  error "todo: Course.State#eval"
+eval (State k) =
+  fst . k
 
 -- | A `State` where the state also distributes into the produced value.
 --
@@ -102,7 +102,7 @@ instance Applicative (State s) where
   (<*>) ::
     State s (a -> b)
     -> State s a
-    -> State s b 
+    -> State s b
   (<*>) =
     error "todo: Course.State (<*>)#instance (State s)"
 

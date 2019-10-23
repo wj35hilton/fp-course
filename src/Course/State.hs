@@ -58,7 +58,7 @@ eval (State k) =
 get ::
   State s s
 get =
-  error "todo: Course.State#get"
+  State (\s -> (s, s))
 
 -- | A `State` where the resulting state is seeded with the given value.
 --
@@ -68,7 +68,7 @@ put ::
   s
   -> State s ()
 put =
-  error "todo: Course.State#put"
+  State . const . (,) ()
 
 -- | Implement the `Functor` instance for `State s`.
 --
@@ -79,8 +79,8 @@ instance Functor (State s) where
     (a -> b)
     -> State s a
     -> State s b
-  (<$>) =
-    error "todo: Course.State#(<$>)"
+  f <$> State k =
+    State (\s -> let (a, t) = k s in (f a, t))
 
 -- | Implement the `Applicative` instance for `State s`.
 --
